@@ -24,6 +24,7 @@ def get_formats():
             audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz")
     vidq_cmb['values'] = video_formats
     audq_cmb['values'] = audio_formats
+    url_ent.configure(state='readonly')
 
 def download():
     x = Thread(target=start)
@@ -44,7 +45,6 @@ def start():
         ytdl_opts['formats'] = [aud_id.group('audq')]
     else:
         print("Check a box")
-
     ytdl = youtube_dl.YoutubeDL(ytdl_opts)
     ytdl.extract_info(url_ent.get(), download=True)
 
