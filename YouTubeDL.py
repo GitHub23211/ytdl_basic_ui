@@ -18,10 +18,11 @@ def get_formats():
     video_formats = []
     info = ytdl.extract_info(url_ent.get(), download=False)
     for form in info['formats']:
-        if form['ext'] != 'm4a' and form['format_id'] != '251':
-            video_formats.append(form['format']) 
-        else:
+        #if form['format'] != 'm4a' and form['format_id'] != '251':
+        if 'audio' in form['format']:
             audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz")
+        else:
+            video_formats.append(form['format']) 
     vidq_cmb['values'] = video_formats
     audq_cmb['values'] = audio_formats
     url_ent.configure(state='readonly')
