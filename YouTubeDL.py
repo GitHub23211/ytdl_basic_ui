@@ -2,6 +2,52 @@ import youtube_dl
 import tkinter as tk
 from tkinter import ttk
 import re
+from threading import Thread
+
+ytdl_opts = {
+    'extract_flat': True,
+    'noplaylist': True,
+}
+ytdl = youtube_dl.YoutubeDL(ytdl_opts)
+
+def close():
+    window.destroy()
+
+def get_formats():
+    audio_formats = []
+    video_formats = []
+    info = ytdl.extract_info(url_ent.get(), download=False)
+    for form in info['formats']:
+        if form['ext'] != 'm4a' and form['format_id'] != '251':
+            video_formats.append(form['format']) 
+        else:
+            audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz")
+    vidq_cmb['values'] = video_formats
+    audq_cmb['values'] = audio_formats
+
+def download():
+    x = Thread(target=start)
+    x.start()
+
+def start():
+    global aud_bool
+    global vid_bool
+    if aud_bool.get() and vid_bool.get():
+        aud_id = re.search(r'(?P<audq>.*?)-', audq_cmb.get(), re.IGNORECASE)
+        vid_id = re.search(r'(?P<vidq>.*?)-', vidq_cmb.get(), re.IGNORECASE)
+        ytdl_opts['formats'] = [aud_id.group('audq'), vid_id.group('vidq')]
+    elif vid_bool.get():
+        vid_id = re.search(r'(?P<vidq>.*?)-', vidq_cmb.get(), re.IGNORECASE)
+        ytdl_opts['formats'] = [vid_id.group('vidq')]
+    elif aud_bool.get():
+        aud_id = re.search(r'(?P<audq>.*?)-', audq_cmb.get(), re.IGNORECASE)
+        ytdl_opts['formats'] = [aud_id.group('audq')]
+    else:
+        print("Check a box")
+
+    ytdl = youtube_dl.YoutubeDL(ytdl_opts)
+    ytdl.extract_info(url_ent.get(), download=True)
+
 
 window_width = 500
 window_height = 400
@@ -28,17 +74,20 @@ url_lbl.grid(row=0, column=0)
 url_ent.grid(row=0,column=1)
 
 options_frame.grid(row=1, padx=10, sticky='w')
-dl_vid = tk.Checkbutton(options_frame, text='Download Video')
-dl_audio = tk.Checkbutton(options_frame, text='Download Audio')
+aud_bool = tk.BooleanVar(False)
+vid_bool = tk.BooleanVar(False)
+dl_vid = tk.Checkbutton(options_frame, text='Download Video', variable=vid_bool, onvalue=True, offvalue=False)
+dl_audio = tk.Checkbutton(options_frame, text='Download Audio', variable=aud_bool, onvalue=True, offvalue=False)
 dl_vid.grid(row=1)
 dl_audio.grid(row=2, pady=10)
 
-quality_frame.grid(row=1, column=0, padx=50)
-string_var = tk.StringVar(quality_frame, 'Select Quality...')
-audq_cmb = ttk.Combobox(quality_frame, textvariable=string_var, state='readonly', width=30)
-vidq_cmb = ttk.Combobox(quality_frame, textvariable=string_var, state='readonly', width=30)
-audq_cmb.grid(row=1, column=2, sticky='e')
-vidq_cmb.grid(row=2, column=2, pady=10)
+quality_frame.grid(row=1, column=0, padx=50, sticky='e')
+vid_string = tk.StringVar(quality_frame, 'Select Quality...')
+aud_string = tk.StringVar(quality_frame, 'Select Quality...')
+audq_cmb = ttk.Combobox(quality_frame, textvariable=vid_string, state='readonly', width=40)
+vidq_cmb = ttk.Combobox(quality_frame, textvariable=aud_string, state='readonly', width=40)
+vidq_cmb.grid(row=1, column=1, sticky='e')
+audq_cmb.grid(row=2, column=1, pady=10)
 
 progress_frame.grid(row=2, column=0, sticky='w', padx=15)
 prog_lbl = tk.Label(progress_frame, text='Progress:')
@@ -47,24 +96,12 @@ prog_lbl.grid(row=2, column=0, sticky='w')
 prog_bar.grid(row=3, column=0)
 
 menu_button_frame.grid(row=5, column=0, sticky='e')
-dl_btn = ttk.Button(menu_button_frame, text='Download')
-close_btn = ttk.Button(menu_button_frame, text='Close')
-dl_btn.grid(row=5, column=0)
-close_btn.grid(row=5, column=1, padx=10)
+format_btn = ttk.Button(menu_button_frame, text='Get Formats', command=get_formats)
+close_btn = ttk.Button(menu_button_frame, text='Close', command=close)
+dl_btn = ttk.Button(menu_button_frame, text='Download', command=download)
+format_btn.grid(row=5, column=0)
+dl_btn.grid(row=5, column=1, padx=10)
+close_btn.grid(row=5, column=2, padx=10)
 
 window.mainloop()
-
-# ytdl = youtube_dl.YoutubeDL({
-#             'format': '140',
-#             'restrictfilenames': True,
-#             'extract_flat': True,
-#             'noplaylist': True,
-#             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-#             'source_address': '0.0.0.0'
-# })
-
-# #url = input("URL of video you want to download?\n")
-
-# ytdl.extract_info(url, download=True)
-
 
