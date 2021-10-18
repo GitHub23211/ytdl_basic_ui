@@ -13,12 +13,12 @@ ytdl = youtube_dl.YoutubeDL(ytdl_opts)
 def close():
     window.destroy()
 
+
 def get_formats():
     audio_formats = []
     video_formats = []
     info = ytdl.extract_info(url_ent.get(), download=False)
     for form in info['formats']:
-        #if form['format'] != 'm4a' and form['format_id'] != '251':
         if 'audio' in form['format']:
             audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz")
         else:
@@ -29,6 +29,7 @@ def get_formats():
 
 def download():
     x = Thread(target=start)
+    x.daemon = True
     x.start()
 
 def start():
@@ -46,6 +47,7 @@ def start():
         ytdl_opts['formats'] = [aud_id.group('audq')]
     else:
         print("Check a box")
+        return 0
     ytdl = youtube_dl.YoutubeDL(ytdl_opts)
     ytdl.extract_info(url_ent.get(), download=True)
 
