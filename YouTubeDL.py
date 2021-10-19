@@ -27,12 +27,12 @@ def get_formats():
                 video_formats.append(form['format'] + ", " + str(form['fps']) + "FPS, ." + str(form['ext']) + " (Video only)") 
     vidq_cmb['values'] = video_formats
     audq_cmb['values'] = audio_formats
-    url_ent.configure(state='readonly')
 
 def download():
     x = Thread(target=start)
     x.daemon = True
     x.start()
+    url_ent.configure(state='readonly')
 
 def start():
     global aud_bool
@@ -49,7 +49,6 @@ def start():
         print("Check a box")
         return 0
     ytdl = youtube_dl.YoutubeDL(ytdl_opts)
-    print(ytdl_opts.items())
     ytdl.extract_info(url_ent.get(), download=True)
 
 
