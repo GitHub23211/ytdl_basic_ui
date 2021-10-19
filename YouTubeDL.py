@@ -35,20 +35,23 @@ def download():
 def start():
     global aud_bool
     global vid_bool
+    ytdl_opts = {
+        'extract_flat': True,
+        'noplaylist': True,
+    }
+    aud_id = re.search(r'(?P<audq>.*?) ', audq_cmb.get(), re.IGNORECASE)
+    vid_id = re.search(r'(?P<vidq>.*?) ', vidq_cmb.get(), re.IGNORECASE)
     if aud_bool.get() and vid_bool.get():
-        aud_id = re.search(r'(?P<audq>.*?)-', audq_cmb.get(), re.IGNORECASE)
-        vid_id = re.search(r'(?P<vidq>.*?)-', vidq_cmb.get(), re.IGNORECASE)
         ytdl_opts['formats'] = [aud_id.group('audq'), vid_id.group('vidq')]
     elif vid_bool.get():
-        vid_id = re.search(r'(?P<vidq>.*?)-', vidq_cmb.get(), re.IGNORECASE)
         ytdl_opts['formats'] = [vid_id.group('vidq')]
     elif aud_bool.get():
-        aud_id = re.search(r'(?P<audq>.*?)-', audq_cmb.get(), re.IGNORECASE)
         ytdl_opts['formats'] = [aud_id.group('audq')]
     else:
         print("Check a box")
         return 0
     ytdl = youtube_dl.YoutubeDL(ytdl_opts)
+    print(ytdl_opts.items())
     ytdl.extract_info(url_ent.get(), download=True)
 
 
