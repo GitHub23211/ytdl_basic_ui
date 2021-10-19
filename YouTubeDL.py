@@ -13,16 +13,18 @@ ytdl = youtube_dl.YoutubeDL(ytdl_opts)
 def close():
     window.destroy()
 
-
 def get_formats():
     audio_formats = []
     video_formats = []
     info = ytdl.extract_info(url_ent.get(), download=False)
     for form in info['formats']:
         if 'audio' in form['format']:
-            audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz" + ", " + str(form['ext'] + " file"))
+            audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz" + ", ." + str(form['ext']))
         else:
-            video_formats.append(form['format'] + ", " + str(form['fps']) + "FPS, " + str(form['ext']) + " file") 
+            if form['format_id'] == '22' or form['format_id'] == '18':
+                video_formats.append(form['format'] + ", " + str(form['fps']) + "FPS, ." +  str(form['ext']) + " (Video+Audio)")
+            else:
+                video_formats.append(form['format'] + ", " + str(form['fps']) + "FPS, ." + str(form['ext']) + " (Video only)") 
     vidq_cmb['values'] = video_formats
     audq_cmb['values'] = audio_formats
     url_ent.configure(state='readonly')
@@ -35,18 +37,14 @@ def download():
 def start():
     global aud_bool
     global vid_bool
-    ytdl_opts = {
-        'extract_flat': True,
-        'noplaylist': True,
-    }
     aud_id = re.search(r'(?P<audq>.*?) ', audq_cmb.get(), re.IGNORECASE)
     vid_id = re.search(r'(?P<vidq>.*?) ', vidq_cmb.get(), re.IGNORECASE)
     if aud_bool.get() and vid_bool.get():
-        ytdl_opts['formats'] = [aud_id.group('audq'), vid_id.group('vidq')]
+        ytdl_opts['format'] = str(vid_id.group('vidq')) + "+" + str(aud_id.group('audq')) 
     elif vid_bool.get():
-        ytdl_opts['formats'] = [vid_id.group('vidq')]
+        ytdl_opts['format'] = vid_id.group('vidq')
     elif aud_bool.get():
-        ytdl_opts['formats'] = [aud_id.group('audq')]
+        ytdl_opts['format'] = aud_id.group('audq')
     else:
         print("Check a box")
         return 0
