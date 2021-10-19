@@ -20,9 +20,9 @@ def get_formats():
     info = ytdl.extract_info(url_ent.get(), download=False)
     for form in info['formats']:
         if 'audio' in form['format']:
-            audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz")
+            audio_formats.append(str(form['format']) + " " + str(form['asr']) + "Hz" + ", " + str(form['ext'] + " file"))
         else:
-            video_formats.append(form['format']) 
+            video_formats.append(form['format'] + ", " + str(form['fps']) + "FPS, " + str(form['ext']) + " file") 
     vidq_cmb['values'] = video_formats
     audq_cmb['values'] = audio_formats
     url_ent.configure(state='readonly')
@@ -63,11 +63,9 @@ main_frame = tk.Frame(window)
 url_frame = tk.Frame(main_frame)
 options_frame = tk.Frame(main_frame)
 quality_frame = tk.Frame(main_frame)
-#empty_frame = tk.Frame(window, width=window_width, height=200)
 menu_button_frame = tk.Frame(window)
 
 main_frame.grid()
-#empty_frame.grid(row=4, column=0)
 
 url_frame.grid(padx=10, pady=10, sticky='w')
 url_lbl = tk.Label(url_frame, text="URL:")
@@ -83,11 +81,11 @@ dl_audio = tk.Checkbutton(options_frame, text='Download Audio', variable=aud_boo
 dl_vid.grid(row=1)
 dl_audio.grid(row=2, pady=10)
 
-quality_frame.grid(row=1, column=0, padx=10, sticky='e')
+quality_frame.grid(row=1, column=0, padx=8, sticky='e')
 vid_string = tk.StringVar(quality_frame, 'Select Quality...')
 aud_string = tk.StringVar(quality_frame, 'Select Quality...')
-audq_cmb = ttk.Combobox(quality_frame, textvariable=vid_string, state='readonly', width=40)
-vidq_cmb = ttk.Combobox(quality_frame, textvariable=aud_string, state='readonly', width=40)
+audq_cmb = ttk.Combobox(quality_frame, textvariable=vid_string, state='readonly', width=45)
+vidq_cmb = ttk.Combobox(quality_frame, textvariable=aud_string, state='readonly', width=45)
 vidq_cmb.grid(row=1, column=1)
 audq_cmb.grid(row=2, column=1, pady=10)
 
