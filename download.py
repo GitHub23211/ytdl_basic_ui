@@ -34,17 +34,12 @@ class Download():
             config.write(file)
             file.close()
         self.cur_dir.set(value=f'Saving songs to: {self.save_dir}')
-        
-    
-    def get_info(self, url):
-        info = self.yt.sanitize_info(self.yt.extract_info(url, download=False))
-        print(info)
 
     def add_song(self):
         url = self.url_var.get()
         if len(url) > 0:
             self.queue.add(url)
-            self.get_info(url)
+
         self.song_queue.set(self.queue.get())
         self.url_var.set('')
     
@@ -77,7 +72,7 @@ class Download():
             'quiet': True,
         }
 
-        # with yt_dlp.YoutubeDL(opts) as yt:
-        #     yt.download(self.queue.get())
+        with yt_dlp.YoutubeDL(opts) as yt:
+            yt.download(self.queue.get())
 
         print('download starting')
