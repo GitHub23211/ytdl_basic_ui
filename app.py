@@ -5,7 +5,7 @@ from ui import UI
 class App(Tk):
     def __init__(self):
         Tk.__init__(self)
-        self.minsize(500, 70)
+        self.minsize(400, 70)
         self.title('YouTubeDL')
         Download(self, UI)
 
