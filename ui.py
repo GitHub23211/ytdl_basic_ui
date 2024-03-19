@@ -1,5 +1,4 @@
 from tkinter import ttk, Frame, Label, Entry, Button, Listbox, Scrollbar, Menu, ttk
-import datetime
 
 class UI(Frame):
     def __init__(self, root, state):
