@@ -67,7 +67,6 @@ class Download():
         
         self.prog_var.set(float(progress))
         if self.interrupt:
-            print(self.interrupt)
             self.interrupt = False
             raise ValueError('Cancelled!')
         
@@ -88,17 +87,19 @@ class Download():
         
         if not self.queue.hasNext():
             return messagebox.showerror('Error', 'No songs in queue.')
-        x = Thread(target=lambda: self.download_queue(btn))
-        x.daemon = True
-
+        if self.interrupt is True:
+            self.interrupt = False
+        
         self.prog_title.set('Downloading...')
         btn.config(state='disabled')
-
+        
+        x = Thread(target=lambda: self.download_queue(btn))
+        x.daemon = True
         x.start()
     
     def download_queue(self, btn):
         opts = {
-            'format': 'bestaudio/best',
+            'format': 'm4a/bestaudio',
             # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
             'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -114,6 +115,7 @@ class Download():
             while self.queue.hasNext():
                 with yt_dlp.YoutubeDL(opts) as yt:
                     yt.download(self.queue.get())
+                    self.reset_progress()
             messagebox.showinfo('Finished', 'Finished!')
         except Exception as e:
             messagebox.showerror('Error', e)
