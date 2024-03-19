@@ -61,7 +61,11 @@ class Download():
         self.url_var.set('')
     
     def dl_progress(self, dict):
-        self.prog_var.set(float(dict['_percent_str'][7:12]))
+        progress = dict['_percent_str'][7:12]
+        if progress is None or len(progress) == 0:
+            return
+        
+        self.prog_var.set(float(progress))
         if self.interrupt:
             print(self.interrupt)
             self.interrupt = False
