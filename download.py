@@ -2,9 +2,10 @@ from tkinter import StringVar, DoubleVar, filedialog, messagebox
 import yt_dlp
 import re
 import configparser
-from tkinter import Frame
 from threading import Thread
 from song_queue import SongQueue
+
+URL_REGEX = '^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$'
 
 class Download():
     def __init__(self, root, frame):
@@ -16,6 +17,7 @@ class Download():
         self.prog_var = DoubleVar(value=0.0)
         self.save_dir = ''
         self.interrupt = False
+        self.regex = re.compile(URL_REGEX)
         self.get_dir()
         frame(root, self).build()
     
@@ -27,7 +29,11 @@ class Download():
     
     def change_dir(self):
         config = configparser.ConfigParser()
-        self.save_dir = filedialog.askdirectory(initialdir='./')
+        new_dir = filedialog.askdirectory(initialdir='./')
+        if new_dir is None or len(new_dir) == 0:
+            return
+        
+        self.save_dir = new_dir
         config['DEFAULT'] = {
             'dir': self.save_dir
         }
@@ -38,8 +44,10 @@ class Download():
 
     def add_song(self):
         url = self.url_var.get()
-        if len(url) > 0:
+        if self.regex.match(url) is not None:
             self.queue.add(url)
+        else:
+            messagebox.showerror('Error', 'Invalid YouTube URL')
 
         self.song_queue.set(self.queue.get())
         self.url_var.set('')
@@ -66,6 +74,8 @@ class Download():
             except Exception as e:
                 messagebox.showerror('Error', 'Invalid save location')
         
+        if not self.queue.hasNext():
+            return messagebox.showerror('Error', 'No songs in queue.')
         x = Thread(target=lambda: self.download_queue(btn))
         x.daemon = True
 
