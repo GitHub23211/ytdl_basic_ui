@@ -29,7 +29,7 @@ class UI(Frame):
         add_song = Button(f, text='Add to Queue', command=self.state.add_song)
         download = Button(f, text='Start Download', command=lambda: self.state.start(download))
         change_dir = Button(f, text='Change Directory', command=self.state.change_dir)
-        cancel = Button(f, text='Cancel')
+        cancel = Button(f, text='Cancel', command=self.state.interrupt_dl)
 
         f.grid()
         add_song.grid(row=0, column=0, padx=10, sticky=('w', 'e'))

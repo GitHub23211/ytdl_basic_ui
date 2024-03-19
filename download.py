@@ -15,6 +15,7 @@ class Download():
         self.prog_title = StringVar(value='Ready to Download')
         self.prog_var = DoubleVar(value=0.0)
         self.save_dir = ''
+        self.interrupt = False
         self.get_dir()
         frame(root, self).build()
     
@@ -45,8 +46,14 @@ class Download():
     
     def dl_progress(self, dict):
         self.prog_var.set(float(dict['_percent_str'][7:12]))
+        if self.interrupt:
+            print(self.interrupt)
+            self.interrupt = False
+            raise ValueError('Cancelled!')
+        
         if(dict['status'] == 'finished'): 
             self.queue.remove()
+            self.song_queue.set(self.queue.get())
     
     def pp_progress(self, dict):
         if(dict['status'] == 'started'):
@@ -81,13 +88,20 @@ class Download():
             'postprocessor_hooks': [self.pp_progress],
             'quiet': True,
         }
-        with yt_dlp.YoutubeDL(opts) as yt:
-            yt.download(self.queue.get())
+        try:
+            while self.queue.hasNext():
+                with yt_dlp.YoutubeDL(opts) as yt:
+                    yt.download(self.queue.get())
+            messagebox.showinfo('Finished', 'Finished!')
+        except Exception as e:
+            messagebox.showerror('Error', e)
         
-        messagebox.showinfo('Finished', 'Finished!')
         btn.config(state='normal')
         self.reset_progress()
 
     def reset_progress(self):
-        self.prog_title = StringVar(value='Ready to Download')
-        self.prog_var = DoubleVar(value=0.0)
+        self.prog_title.set(value='Ready to Download')
+        self.prog_var.set(value=0.0)
+    
+    def interrupt_dl(self):
+        self.interrupt = True
