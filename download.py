@@ -61,11 +61,11 @@ class Download():
         self.url_var.set('')
     
     def dl_progress(self, dict):
-        progress = dict['_percent_str'][7:12]
-        if progress is None or len(progress) == 0:
+        progress = dict['downloaded_bytes']/dict['total_bytes']
+        if progress is None:
             return
         
-        self.prog_var.set(float(progress))
+        self.prog_var.set(float(100*progress))
         if self.interrupt:
             self.interrupt = False
             raise ValueError('Cancelled!')
@@ -114,6 +114,7 @@ class Download():
         try:
             while self.queue.hasNext():
                 with yt_dlp.YoutubeDL(opts) as yt:
+                    self.prog_title.set('Downloading...')
                     yt.download(self.queue.get())
                     self.reset_progress()
             messagebox.showinfo('Finished', 'Finished!')
