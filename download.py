@@ -23,10 +23,19 @@ class Download():
     
     def get_dir(self):
         config = configparser.ConfigParser()
-        config.read('dir.ini')
-        self.save_dir = config['DEFAULT']['dir']
-        self.cur_dir.set(value=f'Saving songs to: {self.save_dir}')
-    
+        try:
+            config.read('dir.ini')
+            self.save_dir = config['DEFAULT']['dir']
+            self.cur_dir.set(value=f'Saving songs to: {self.save_dir}')
+        except KeyError as e:
+            config['DEFAULT'] = {
+                'dir': ''
+            }
+            with open('dir.ini', 'w') as file:
+                config.write(file)
+            self.save_dir = ''
+            self.cur_dir.set(value=f'Saving songs to: {self.save_dir}')
+
     def change_dir(self):
         config = configparser.ConfigParser()
         new_dir = filedialog.askdirectory(initialdir='./')
@@ -39,7 +48,6 @@ class Download():
         }
         with open('dir.ini', 'w') as file:
             config.write(file)
-            file.close()
         self.cur_dir.set(value=f'Saving songs to: {self.save_dir}')
 
     def add_song(self):
