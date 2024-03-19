@@ -1,6 +1,6 @@
 import threading
 
-class SongQ:
+class SongQueue:
     def __init__(self):
         self.queue = []
         self.song_list = ''

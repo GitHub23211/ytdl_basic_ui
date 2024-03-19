@@ -4,14 +4,14 @@ from tkinter import filedialog
 from tkinter import messagebox
 import datetime
 from threading import Thread
-import songq
+from song_queue import SongQueue
 import re
 
 
 def close():
     window.destroy()
 
-song_queue = songq.SongQ()
+song_queue = SongQueue()
 
 def download():
     x = Thread(target=start)
