@@ -136,3 +136,4 @@ test.py
 .vbs
 /yt-dlp-master
 *.exe
+*venv
