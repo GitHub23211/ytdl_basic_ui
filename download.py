@@ -44,35 +44,48 @@ class Download():
         self.url_var.set('')
     
     def dl_progress(self, dict):
-        print(dict)
+        self.prog_var.set(float(dict['_percent_str'][7:12]))
     
     def pp_progress(self, dict):
-        print(dict)
+        if(dict['status'] == 'started'):
+            self.prog_title.set('Converting to mp3...')
 
-    def start(self):
-        self.prog_title.set('Downloading...')
-        if self.save_dir == './' or self.save_dir is None or len(self.save_dir) == 0:
-            try:
-                self.change_dir()
+    def start(self, btn):
+        def dl():
+            if self.save_dir == './' or self.save_dir is None or len(self.save_dir) == 0:
+                try:
+                    self.change_dir()
+                except Exception as e:
+                    messagebox.showerror('Error', 'Invalid save location')
 
-            except Exception as e:
-                messagebox.showerror('Error', 'Invalid save location')
+            self.prog_title.set('Downloading...')
+            btn.config(state='disabled')
 
-        opts = {
-            'format': 'bestaudio/best',
-            # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '128'
-            }],
-            'paths': {'home': self.save_dir},
-            'progress_hooks': [self.dl_progress],
-            'postprocessor_hooks': [self.pp_progress],
-            'quiet': True,
-        }
+            opts = {
+                'format': 'bestaudio/best',
+                # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '128'
+                }],
+                'paths': {'home': self.save_dir},
+                'progress_hooks': [self.dl_progress],
+                'postprocessor_hooks': [self.pp_progress],
+                'quiet': True,
+            }
 
-        with yt_dlp.YoutubeDL(opts) as yt:
-            yt.download(self.queue.get())
+            with yt_dlp.YoutubeDL(opts) as yt:
+                yt.download(self.queue.get())
 
-        print('download starting')
+            messagebox.showinfo('Finished', 'Finished downloading queue!')
+            btn.config(state='normal')
+            self.reset_progress()
+
+        x = Thread(target=dl)
+        x.daemon = True
+        x.start()
+    
+    def reset_progress(self):
+        self.prog_title = StringVar(value='Ready to Download')
+        self.prog_var = DoubleVar(value=0.0)
