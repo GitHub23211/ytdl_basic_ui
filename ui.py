@@ -13,8 +13,8 @@ class UI(Frame):
         self.make_menu()
         self.url_entry()
         self.buttons()
-        self.progress_bar()
         self.song_list()
+        self.progress_bar()
 
     def url_entry(self):
         f = Frame(self)
@@ -23,23 +23,25 @@ class UI(Frame):
 
         url_ent.bind_class("Entry", "<Button-3><ButtonRelease-3>", self.show_menu)
 
-        f.grid(padx=10, pady=20)
+        f.grid(columnspan=2, padx=10, pady=20)
         url_lbl.grid(row=0, column=0)
         url_ent.grid(row=0, column=1)
     
     def buttons(self):
-        f = Frame(self)
+        f = Frame(self)#, borderwidth=1, background='red')
 
         add_song = Button(f, text='Add to Queue', command=self.state.add_song)
         download = Button(f, text='Start Download', command=lambda: self.state.start(download))
         change_dir = Button(f, text='Change Directory', command=self.state.change_dir)
+        rem_song = Button(f, text='Remove song', command=self.state.remove_song)
         cancel = Button(f, text='Cancel', command=self.state.interrupt_dl)
 
-        f.grid()
-        add_song.grid(row=0, column=0, padx=10, sticky=('w', 'e'))
-        download.grid(row=0, column=1, sticky=('w', 'e'))
-        change_dir.grid(row=0, column=2, padx=10, sticky=('w', 'e'))
-        cancel.grid(row=0, column=3, sticky=('w', 'e'))
+        f.grid(row=1, column=0, sticky=('w', 'e'), padx=5)
+        download.grid(row=0, column=0, sticky=('w', 'e'))
+        add_song.grid(row=1, column=0, sticky=('w', 'e'))
+        rem_song.grid(row=2, column=0, sticky=('w', 'e'))
+        change_dir.grid(row=3, column=0, sticky=('w', 'e'))
+        cancel.grid(row=4, column=0, sticky=('w', 'e'))
     
     def progress_bar(self):
         f = Frame(self)
@@ -47,19 +49,19 @@ class UI(Frame):
         d = Label(f, textvariable=self.state.cur_dir)
         p = ttk.Progressbar(f, orient='horizontal', length=300, mode='determinate', variable=self.state.prog_var, value=self.state.prog_var.get())
         
-        f.grid(pady=20)
-        t.grid()
-        p.grid(pady=5)
+        f.grid(columnspan=2, pady=20)
+        t.grid(sticky=('e', 'w'))
+        p.grid(pady=5,)
         d.grid(pady=5)
     
     def song_list(self):
         f = Frame(self)
         title = Label(f, text='Song Queue')
-        lbox = Listbox(f, width=61, listvariable=self.state.song_queue, selectmode='single', state='disabled')
+        lbox = Listbox(f, width=50, listvariable=self.state.song_list, selectmode='single', state='disabled')
         scroll = Scrollbar(f, orient='vertical', command=lbox.yview)
         lbox.configure(yscrollcommand=scroll.set)
 
-        f.grid(pady=20)
+        f.grid(row=1, column=1)
         title.grid(row=0, column=0)
         lbox.grid(row=1, column=0)
         scroll.grid(row=1, column=1, sticky=('n', 's'))

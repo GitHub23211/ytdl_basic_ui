@@ -10,7 +10,7 @@ URL_REGEX = '^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|yout
 class Download():
     def __init__(self, root, frame):
         self.queue = SongQueue()
-        self.song_queue = StringVar(value=[])
+        self.song_list = StringVar(value=[])
         self.url_var = StringVar(value='')
         self.cur_dir = StringVar(value='')
         self.prog_title = StringVar(value='Ready to Download')
@@ -57,8 +57,12 @@ class Download():
         else:
             messagebox.showerror('Error', 'Invalid YouTube URL')
 
-        self.song_queue.set(self.queue.get())
+        self.song_list.set(self.queue.get())
         self.url_var.set('')
+    
+    def remove_song(self):
+        self.queue.remove()
+        self.song_list.set(self.queue.get())
     
     def dl_progress(self, dict):
         progress = dict['downloaded_bytes']/dict['total_bytes']
@@ -71,8 +75,7 @@ class Download():
             raise ValueError('Cancelled!')
         
         if(dict['status'] == 'finished'): 
-            self.queue.remove()
-            self.song_queue.set(self.queue.get())
+            self.remove_song()
     
     def pp_progress(self, dict):
         if(dict['status'] == 'started'):
