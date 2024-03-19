@@ -4,6 +4,7 @@ import datetime
 class UI(Frame):
     def __init__(self, root, state):
         Frame.__init__(self, root)
+        self.state = state
         self.url_var = StringVar(value='')
         self.prog_title = StringVar(value='Ready to Download')
         self.prog_var = DoubleVar(value=0.0)
@@ -29,7 +30,7 @@ class UI(Frame):
     def buttons(self):
         f = Frame(self)
 
-        add_song = Button(f, text='Add to Queue')
+        add_song = Button(f, text='Add to Queue', command=self.add_song)
         download = Button(f, text='Start Download')
         cancel = Button(f, text='Cancel')
 
@@ -46,7 +47,6 @@ class UI(Frame):
         f.grid(pady=20)
         t.grid()
         p.grid()
-
     
     def song_list(self):
         f = Frame(self)
@@ -59,3 +59,10 @@ class UI(Frame):
         title.grid(row=0, column=0)
         lbox.grid(row=1, column=0)
         scroll.grid(row=1, column=1, sticky=('n', 's'))
+    
+    def add_song(self):
+        url = self.url_var.get()
+        if len(url) > 0:
+            self.state.queue.add(url)
+        print(self.state.queue.get())
+        self.url_var.set('')
