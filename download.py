@@ -45,6 +45,8 @@ class Download():
     
     def dl_progress(self, dict):
         self.prog_var.set(float(dict['_percent_str'][7:12]))
+        if(dict['status'] == 'finished'): 
+            self.queue.remove()
     
     def pp_progress(self, dict):
         if(dict['status'] == 'started'):
