@@ -55,7 +55,7 @@ class Download():
         if self.regex.match(url) is not None:
             self.queue.add(url)
         else:
-            messagebox.showerror('Error', 'Invalid YouTube URL')
+            messagebox.showerror('Add Song Error', 'Invalid YouTube URL')
 
         self.song_list.set(self.queue.get())
         self.url_var.set('')
@@ -65,17 +65,15 @@ class Download():
         self.song_list.set(self.queue.get())
     
     def dl_progress(self, dict):
-        progress = dict['downloaded_bytes']/dict['total_bytes']
-        if progress is None:
-            return
-        
-        self.prog_var.set(float(100*progress))
+        if 'downlaoded_byes' in dict:
+            progress = dict['downloaded_bytes']/dict['total_bytes']
+            if progress is None:
+                return
+            
+            self.prog_var.set(float(100*progress))
         if self.interrupt:
             self.interrupt = False
             raise ValueError('Cancelled!')
-        
-        if(dict['status'] == 'finished'): 
-            self.remove_song()
     
     def pp_progress(self, dict):
         if(dict['status'] == 'started'):
@@ -86,10 +84,10 @@ class Download():
             try:
                 self.change_dir()
             except Exception as e:
-                messagebox.showerror('Error', 'Invalid save location')
+                messagebox.showerror('save_dir Error', 'Invalid save location')
         
         if not self.queue.hasNext():
-            return messagebox.showerror('Error', 'No songs in queue.')
+            return messagebox.showerror('Queue Error', 'No songs in queue.')
         if self.interrupt is True:
             self.interrupt = False
         
@@ -119,10 +117,11 @@ class Download():
                 with yt_dlp.YoutubeDL(opts) as yt:
                     self.prog_title.set('Downloading...')
                     yt.download(self.queue.get())
+                    self.remove_song()
                     self.reset_progress()
             messagebox.showinfo('Finished', 'Finished!')
         except Exception as e:
-            messagebox.showerror('Error', e)
+            messagebox.showerror('Download Error', e)
         
         btn.config(state='normal')
         self.reset_progress()
