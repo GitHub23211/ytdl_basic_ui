@@ -64,6 +64,10 @@ class Download():
         self.queue.remove()
         self.song_list.set(self.queue.get())
     
+    def remove_last_song(self):
+        self.queue.remove_last()
+        self.song_list.set(self.queue.get())
+    
     def dl_progress(self, dict):
         if 'downlaoded_byes' in dict:
             progress = dict['downloaded_bytes']/dict['total_bytes']
@@ -86,7 +90,7 @@ class Download():
             except Exception as e:
                 messagebox.showerror('save_dir Error', 'Invalid save location')
         
-        if not self.queue.hasNext():
+        if not self.queue.has_next():
             return messagebox.showerror('Queue Error', 'No songs in queue.')
         if self.interrupt is True:
             self.interrupt = False
@@ -113,7 +117,7 @@ class Download():
             'quiet': True,
         }
         try:
-            while self.queue.hasNext():
+            while self.queue.has_next():
                 with yt_dlp.YoutubeDL(opts) as yt:
                     self.prog_title.set('Downloading...')
                     yt.download(self.queue.get())

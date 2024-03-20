@@ -32,12 +32,13 @@ class UI(Frame):
         add_song = Button(f, text='Add to Queue', command=self.state.add_song)
         download = Button(f, text='Start Download', command=lambda: self.state.start(download))
         change_dir = Button(f, text='Change Directory', command=self.state.change_dir)
-        rem_song = Button(f, text='Remove song', command=self.state.remove_song)
+        rem_song = Button(f, text='Remove Song', command=self.state.remove_last_song)
         cancel = Button(f, text='Cancel', command=self.state.interrupt_dl)
 
         f.grid(row=1, column=0, sticky=('w', 'e'), padx=5)
-        download.grid(row=0, column=0, sticky=('w', 'e'))
-        add_song.grid(row=1, column=0, sticky=('w', 'e'))
+
+        add_song.grid(row=0, column=0, sticky=('w', 'e'))
+        download.grid(row=1, column=0, sticky=('w', 'e'))
         rem_song.grid(row=2, column=0, sticky=('w', 'e'))
         change_dir.grid(row=3, column=0, sticky=('w', 'e'))
         cancel.grid(row=4, column=0, sticky=('w', 'e'))

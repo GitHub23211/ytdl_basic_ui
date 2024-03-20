@@ -16,8 +16,14 @@ class SongQueue:
         if(len(self.queue) > 0):
             self.queue.pop(0)
         self.mutex.release()
+    
+    def remove_last(self):
+        self.mutex.acquire()
+        if(len(self.queue) > 0):
+            self.queue.pop()
+        self.mutex.release()
 
-    def hasNext(self):
+    def has_next(self):
         has = False
         self.mutex.acquire()
         has = len(self.queue) > 0
