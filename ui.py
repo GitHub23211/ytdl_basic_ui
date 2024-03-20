@@ -30,7 +30,7 @@ class UI(Frame):
         f = Frame(self)#, borderwidth=1, background='red')
 
         add_song = Button(f, text='Add to Queue', command=self.state.add_song)
-        download = Button(f, text='Start Download', command=lambda: self.state.start(download))
+        download = Button(f, text='Start Download', command=lambda: self.state.start(download, change_dir))
         change_dir = Button(f, text='Change Directory', command=self.state.change_dir)
         rem_song = Button(f, text='Remove Song', command=self.state.remove_last_song)
         cancel = Button(f, text='Cancel', command=self.state.interrupt_dl)

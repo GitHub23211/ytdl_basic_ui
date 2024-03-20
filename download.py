@@ -69,21 +69,29 @@ class Download():
         self.song_list.set(self.queue.get())
     
     def dl_progress(self, dict):
-        if 'downlaoded_byes' in dict:
+        if 'downloaded_bytes' in dict:
             progress = dict['downloaded_bytes']/dict['total_bytes']
             if progress is None:
                 return
             
             self.prog_var.set(float(100*progress))
+            self.prog_title.set(f'Downloading... {"{:.1f}".format(float(100*progress))}%')
+
+            if(dict['status'] == 'finished'):
+                self.remove_song()
+        else:
+            self.remove_song()
+
         if self.interrupt:
             self.interrupt = False
+            self.remove_song()
             raise ValueError('Cancelled!')
     
     def pp_progress(self, dict):
         if(dict['status'] == 'started'):
             self.prog_title.set('Converting to mp3...')
 
-    def start(self, btn):
+    def start(self, download_btn, change_dir_btn):
         if self.save_dir == './' or self.save_dir is None or len(self.save_dir) == 0:
             try:
                 self.change_dir()
@@ -95,14 +103,15 @@ class Download():
         if self.interrupt is True:
             self.interrupt = False
         
-        self.prog_title.set('Downloading...')
-        btn.config(state='disabled')
+        self.prog_title.set('Starting...')
+        download_btn.config(state='disabled')
+        change_dir_btn.config(state='disabled')
         
-        x = Thread(target=lambda: self.download_queue(btn))
+        x = Thread(target=lambda: self.download_queue(download_btn, change_dir_btn))
         x.daemon = True
         x.start()
     
-    def download_queue(self, btn):
+    def download_queue(self, download_btn, change_dir_btn):
         opts = {
             'format': 'm4a/bestaudio',
             # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
@@ -119,15 +128,15 @@ class Download():
         try:
             while self.queue.has_next():
                 with yt_dlp.YoutubeDL(opts) as yt:
-                    self.prog_title.set('Downloading...')
+                    self.prog_title.set('Starting...')
                     yt.download(self.queue.get())
-                    self.remove_song()
                     self.reset_progress()
             messagebox.showinfo('Finished', 'Finished!')
         except Exception as e:
             messagebox.showerror('Download Error', e)
         
-        btn.config(state='normal')
+        download_btn.config(state='normal')
+        change_dir_btn.config(state='normal')
         self.reset_progress()
 
     def reset_progress(self):
