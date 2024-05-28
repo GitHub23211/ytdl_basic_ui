@@ -99,7 +99,10 @@ class Download():
                 messagebox.showerror('save_dir Error', 'Invalid save location')
         
         if not self.queue.has_next():
-            return messagebox.showerror('Queue Error', 'No songs in queue.')
+            if not self.url_var.get():
+                return messagebox.showerror('Queue Error', 'No songs in queue.')
+            else: self.add_song()
+            
         if self.interrupt is True:
             self.interrupt = False
         
@@ -113,6 +116,7 @@ class Download():
     
     def download_queue(self, download_btn, change_dir_btn):
         opts = {
+            'outtmpl': '%(title)s',
             'format': 'm4a/bestaudio',
             # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
             'postprocessors': [{
