@@ -37,8 +37,8 @@ class UI(Frame):
 
         f.grid(row=1, column=0, sticky=('w', 'e'), padx=5)
 
-        add_song.grid(row=0, column=0, sticky=('w', 'e'))
-        download.grid(row=1, column=0, sticky=('w', 'e'))
+        download.grid(row=0, column=0, sticky=('w', 'e'))
+        add_song.grid(row=1, column=0, sticky=('w', 'e'))
         rem_song.grid(row=2, column=0, sticky=('w', 'e'))
         change_dir.grid(row=3, column=0, sticky=('w', 'e'))
         cancel.grid(row=4, column=0, sticky=('w', 'e'))
