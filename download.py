@@ -40,7 +40,7 @@ class Download():
         config = configparser.ConfigParser()
         new_dir = filedialog.askdirectory(initialdir='./')
         if new_dir is None or len(new_dir) == 0:
-            return
+            raise Exception
         
         self.save_dir = new_dir
         config['DEFAULT'] = {
@@ -96,7 +96,7 @@ class Download():
             try:
                 self.change_dir()
             except Exception as e:
-                messagebox.showerror('save_dir Error', 'Invalid save location')
+                return messagebox.showerror('save_dir Error', 'Invalid save location')
         
         if not self.queue.has_next():
             if not self.url_var.get():
