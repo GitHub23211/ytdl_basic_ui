@@ -1,6 +1,6 @@
 altgraph==0.17.4
 Brotli==1.1.0
-certifi==2024.2.2
+certifi==2024.7.4
 charset-normalizer==3.3.2
 idna==3.7
 importlib_metadata==7.0.2
@@ -12,9 +12,9 @@ pyinstaller==6.5.0
 pyinstaller-hooks-contrib==2024.3
 pywin32-ctypes==0.2.2
 requests==2.32.2
-setuptools==69.5.1
+setuptools==71.0.4
 tk==0.1.0
-urllib3==2.2.1
+urllib3==2.2.2
 websockets==12.0
-yt-dlp==2024.4.9
-zipp==3.18.1
+yt-dlp==2024.7.16
+zipp==3.19.2
