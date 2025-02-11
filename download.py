@@ -4,6 +4,7 @@ import re
 import configparser
 from threading import Thread
 from song_queue import SongQueue
+import os
 
 URL_REGEX = r'^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$'
 
@@ -16,6 +17,7 @@ class Download():
         self.prog_title = StringVar(value='Ready to Download')
         self.prog_var = DoubleVar(value=0.0)
         self.save_dir = ''
+        self.file_name = ''
         self.interrupt = False
         self.regex = re.compile(URL_REGEX)
         self.get_dir()
@@ -71,6 +73,7 @@ class Download():
     def dl_progress(self, dict):
         if 'downloaded_bytes' in dict:
             progress = dict['downloaded_bytes']/dict['total_bytes']
+            self.file_name = dict['filename']
             if progress is None:
                 return
             
@@ -138,6 +141,10 @@ class Download():
             messagebox.showinfo('Finished', 'Finished!')
         except Exception as e:
             messagebox.showerror('Download Error', e)
+            try:
+                self.remove_part_files()
+            except Exception as e:
+                return messagebox.showerror('remove_part_files Error', 'Could not delete temp files')
         
         download_btn.config(state='normal')
         change_dir_btn.config(state='normal')
@@ -149,3 +156,6 @@ class Download():
     
     def interrupt_dl(self):
         self.interrupt = True
+
+    def remove_part_files(self):
+        os.remove(f'{self.file_name}.part')
